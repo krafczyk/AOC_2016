@@ -2,10 +2,6 @@ util_objs := $(patsubst %.s,%.o,$(wildcard utilities/*.s))
 day_objs := $(patsubst %.s,%.o,$(wildcard src/*.s))
 day_targets := $(patsubst src/%.s,%,$(wildcard src/*.s))
 
-$(info $(util_objs))
-$(info $(day_objs))
-$(info $(day_targets))
-
 all: $(day_targets)
 
 utilities/*.o: utilities/*.s
