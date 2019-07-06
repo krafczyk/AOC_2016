@@ -10,6 +10,7 @@ cstrlen0:
     incq %rax
     cmpb $0,(%rdi,%rax)
     jne cstrlen0
+    incq %rax
     ret
 
 // print a string to the standard output
