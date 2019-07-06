@@ -1,8 +1,9 @@
-    .text
-    .globl cstrlen
 // Get the length of a zero-terminated string
 // %rdi - string
 // returns - %rax - length of string
+// clobbers - %rax
+    .text
+    .globl cstrlen
 cstrlen:
     movq $-1,%rax
 cstrlen0:
@@ -11,10 +12,12 @@ cstrlen0:
     jne cstrlen0
     ret
 
-    .text
-    .globl printcstr
 // print a string to the standard output
 // %rdi - string
+// returns - nothing
+// clobbers - %rax, %rdx, %rsi, %rdi
+    .text
+    .globl printcstr
 printcstr:
     // First, determine length of the string
     call cstrlen
