@@ -1,7 +1,7 @@
     .section .rodata
     .text
 hello:
-    .asciz "Hello World!\n"
+    .string "Hello World!\n"
 
     .global _start
     .text
