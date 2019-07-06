@@ -1,32 +1,29 @@
-    .section .rodata
     .text
-out:
-    .string "len: %llu\n"
+    .globl cstrlen
+// Get the length of a zero-terminated string
+// %rdi - string
+// returns - %rax - length of string
+cstrlen:
+    movq $-1,%rax
+cstrlen0:
+    incq %rax
+    cmpb $0,(%rdi,%rax)
+    jne cstrlen0
+    ret
+
     .text
     .globl printcstr
 // print a string to the standard output
 // %rdi - string
 printcstr:
     // First, determine length of the string
-    movq $-1, %rdx
-sloop0:
-    incq %rdx
-    cmpq $0,(%rdi,%rdx)
-    jne sloop0
+    call cstrlen
 
-    decq %rdx
-
-    //leaq out(%rip), %rdi
-    //movq %rdx, %rsi
-    //movq $0, %rax
-    //call printf@PLT
-
-    //ret
-
-    movq $0x01, %rax
-    movq %rdi, %rsi
-    movq $0x01, %rdi
-    int $0x80
+    movq %rax,%rdx
+    movq $1, %rax
+    movq %rdi,%rsi
+    movq $1, %rdi
+    syscall
     ret
 //    .text
 //    .globl open
