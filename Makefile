@@ -17,3 +17,4 @@ clean:
 	rm -f src/*.o
 	rm -f utilities/*.o
 	rm -f *.a
+	rm -f *.o
