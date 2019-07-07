@@ -31,3 +31,14 @@ mem_alloc:
 mem_alloc_err:
     xorq %rax,%rax
     ret
+
+// Free a block of memory
+// %rdi - void* - address of memory to free
+// %rsi - size_t - length in bytes of memory to free
+// clobbers - %rax
+    .text
+    .globl mem_free
+mem_free:
+    movq $11,%rax
+    syscall
+    ret
