@@ -43,6 +43,42 @@ printcstr:
     call fprintcstr
     ret
 
+// get a string as uint64
+// %rdi - uint64 - the value
+// returns - pointer to the new cstring
+    .text
+    .globl uintstr
+    // Find 'length' necessary for the string
+uintstr:
+    movq $1, %rsi
+    movq %rdi, %rax
+    movq $10, %rcx
+    jp uintstrbeg
+uintstrbegloop:
+    incq %rsi
+uintstrbeg:
+    movq $0, %rdx
+    div %rcx
+    cmpq $0,%rax
+    jne uintstrbegloop
+    addq $1, %rsi
+    movq %rsi, %rcx
+
+    // Allocate memory
+    movq %rcx, %rdi
+    call mem_alloc
+
+    cmp $0,%rax
+    jne uintstr0
+    ret
+
+uintstr0:
+    // Now we need to set the string.
+
+
+
+
+
 //    .text
 //    .globl open
 // open a file and get a file descriptor
