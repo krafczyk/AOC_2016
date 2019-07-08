@@ -4,17 +4,18 @@ map_failed0:
     .string "Map failed!\n"
 map_succeeded:
     .string "Map succeeded!\n"
-
     .global _start
     .text
 _start:
     movq $10, %rdi
+    pushq %rdi
     call mem_alloc
+    popq %rdi
 
     cmpq $0,%rax
     je map_failed
 
-    movq 0, %rsi
+    movq $0, %rsi
     movq $65, %rcx
     movq %rdi, %r8
     subq $1, %r8
@@ -38,8 +39,15 @@ map_failed:
 
 mem_success:
 
-    movq %rax, %rdi
+    movq %rax, %rsi
+    pushq %rdi
     call printcstr
+    popq %rdi
+
+    xorq %rdi, %rsi
+    xorq %rsi, %rdi
+    xorq %rdi, %rsi
+    call mem_free
 
     // exit sequence
     movq $60,%rax; // Syscall 60 is exit
