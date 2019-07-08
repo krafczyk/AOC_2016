@@ -13,22 +13,36 @@ cstrlen0:
     incq %rax
     ret
 
-// print a string to the standard output
-// %rdi - string
+// print a string to a file
+// %rdi - uint64 - file handle
+// %rsi - uint64 - length of string
+// %rdx - string - the string
+// returns - nothing
+// clobbers - %rax, %rdx, %rsi, %rdi
+    .text
+    .globl fprintcstr
+fprintcstr:
+    xorq %rsi, %rdx
+    xorq %rdx, %rsi
+    xorq %rsi, %rdx
+    movq $1, %rax
+    syscall
+    ret
+
+// print a string to stdout
+// %rdi - uint64 - length of string
+// %rsi - string - the string
 // returns - nothing
 // clobbers - %rax, %rdx, %rsi, %rdi
     .text
     .globl printcstr
 printcstr:
-    // First, determine length of the string
-    call cstrlen
-
-    movq %rax,%rdx
-    movq $1, %rax
-    movq %rdi,%rsi
+    movq %rsi, %rdx
+    movq %rdi, %rsi
     movq $1, %rdi
-    syscall
+    call fprintcstr
     ret
+
 //    .text
 //    .globl open
 // open a file and get a file descriptor
