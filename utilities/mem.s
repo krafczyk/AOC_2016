@@ -10,22 +10,22 @@ mem_alloc:
     movq %rdi, %rsi; // (arg1) (len) Save length
     xorq %rdi, %rdi; // (arg0) (addr) Set addr to NULL
 
-    movq $0x1, %rsi; // (arg2) (prot) Set PROT_READ
-    xorq $0x2, %rsi; // Or with PROT_WRITE
-    xorq $0x4, %rsi; // Or with PROT_EXEC
+    movq $0x1, %rdx; // (arg2) (prot) Set PROT_READ
+    xorq $0x2, %rdx; // Or with PROT_WRITE
+    //xorq $0x4, %rdx; // Or with PROT_EXEC
 
-    movq $0x10, %rdx; // (arg3) (flags) Set MAP_PRIVATE
-    xorq $0x20, %rdx; // Or with MAP_ANONYMOUS
+    movq $0x02, %r10; // (arg3) (flags) Set MAP_PRIVATE
+    xorq $0x20, %r10; // Or with MAP_ANONYMOUS
 
-    movq $-1, %rcx; // (arg4) (fildes) The file descriptor we have
+    movq $-1, %r8; // (arg4) (fildes) The file descriptor we have
 
-    xorq %r8, %r8; // (arg5) (off) Set the offset to 0.
+    xorq %r9, %r9; // (arg5) (off) Set the offset to 0.
 
     syscall
 
     ;// Check for failure
-    cmpq $-1,%rax
-    je mem_alloc_err
+    cmpq $-4096,%rax
+    ja mem_alloc_err
     ret
 
 mem_alloc_err:
