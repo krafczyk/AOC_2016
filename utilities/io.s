@@ -142,6 +142,65 @@ uihs1:
     movq %r8,%rax
     ret
 
+// get a string as int64
+// %rdi - int64 - the value
+// returns - pointer to the new cstring
+    .text
+    .globl intstr
+intstr:
+    movq $0,%r14; // Save whether or not this number is negative
+    cmpq $0,%rdi
+    jb is0
+    negq %rdi
+    movq $1,%r14
+is0:
+    // %rdi now contains the 'positive' version of the argument
+    movq %rdi,%r15; // Save the positive argument
+    movq %rdi,%rax
+    movq $0,%rsi
+    movq $10,%rcx
+is1:
+    incq %rsi
+    xorq %rdx,%rdx
+    div %rcx
+    cmpq $0,%rax
+    jne is1
+    incq %rsi
+    
+    cmpq $0,%r14
+    je is2
+    incq %rsi
+is2:
+    pushq %rsi; // Save length of string
+    // Allocate memory
+    movq %rsi,%rdi
+    call mem_alloc
+    movq %rax,%r8
+
+    // Set first element of string to '-' if its negative.
+    cmpq $0,%r14
+    je is3
+    movb $45,(%r8)
+is3:
+    popq %rsi; // Recover string length
+    decq %rsi
+    // Set the last element of the string to 0.
+    movb $0,(%r8,%rsi)
+    // Initialize division loop
+    movq %r15,%rax
+    movq $10,%rcx
+is4:
+    decq %rsi
+    xorq %rdx,%rdx
+    div %rcx
+    addq $48, %rdx
+    movb %dl, (%r8,%rsi)
+    cmpq $0,%rax
+    jne is4
+is5:
+    // Set return value properly
+    movq %r8,%rax
+    ret
 
 //    .text
 //    .globl open
