@@ -20,23 +20,20 @@ cstrlen0:
 
 // print a string to a file
 // %rdi - uint64 - file handle
-// %rsi - uint64 - length of string
-// %rdx - string - the string
+// %rsi - string - the string
+// %rdx - uint64 - length of string
 // returns - nothing
 // clobbers - %rax, %rdx, %rsi, %rdi
     .text
     .globl fprintcstr
 fprintcstr:
-    xorq %rsi, %rdx
-    xorq %rdx, %rsi
-    xorq %rsi, %rdx
     movq $1, %rax
     syscall
     ret
 
 // print a string to stdout
-// %rdi - uint64 - length of string
-// %rsi - string - the string
+// %rdi - string - the string
+// %rsi - uint64 - length of string
 // returns - nothing
 // clobbers - %rax, %rdx, %rsi, %rdi
     .text
