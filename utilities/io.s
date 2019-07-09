@@ -3,6 +3,8 @@
     .globl ioendl
 ioendl:
     .string "\n"
+iohexmap:
+    .string "0123456789ABCDEF"
 // Get the length of a zero-terminated string
 // %rdi - string
 // returns - %rax - length of string
@@ -92,6 +94,52 @@ uis2:
     cmpq $0,%rsi
     jne uis2
     movq %r9,%rax; // Save string to return
+    ret
+
+// get a string for uint64 in hex
+// %rdi - uint64 - the value
+// returns - pointer to the new cstring
+    .text
+    .globl uinthexstr
+uinthexstr:
+    // Determine length of string
+    movq $0,%rsi
+    movq $0x10,%rcx
+    movq %rdi,%rax
+uihs0:
+    xorq %rdx,%rdx
+    div %rcx
+    incq %rsi
+    cmpq $0,%rax
+    jne uihs0
+    addq $3,%rsi; // Add 0 byte, and room for 0x in front.
+
+    // Allocate
+    movq %rdi,%r15
+    movq %rsi,%r14
+    movq %rsi,%rdi
+    call mem_alloc
+
+    movq %rax,%r8
+    leaq iohexmap(%rip),%r9
+    // Add start of string
+    movb $48,(%r8)
+    movb $120,1(%r8)
+    movq $0x10,%rcx
+    decq %r14
+    movq %r15,%rax
+    // Add end of string
+    movb $0,(%r8,%r14)
+uihs1:
+    decq %r14
+    xorq %rdx,%rdx
+    div %rcx
+    movb (%r9,%rdx), %bl
+    movb %bl, (%r8,%r14)
+    cmpq $2,%r14
+    jne uihs1
+
+    movq %r8,%rax
     ret
 
 
