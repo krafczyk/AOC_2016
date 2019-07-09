@@ -17,13 +17,10 @@ _start:
     pushq %rdi
     pushq %rsi
 
-    xorq %rsi,%rdi
-    xorq %rdi,%rsi
-    xorq %rsi,%rdi
     call printcstr
 
-    leaq ioendl(%rip),%rsi
-    movq $2,%rdi
+    leaq ioendl(%rip),%rdi
+    movq $2,%rsi
     call printcstr
 
     popq %rsi
