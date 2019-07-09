@@ -7,46 +7,27 @@ map_succeeded:
     .global _start
     .text
 _start:
-    movq $10, %rdi
+    movq $2000212,%rdi
+    call uintstr
+
+    movq %rax,%rdi
+    call cstrlen
+    movq %rax,%rsi
+
     pushq %rdi
-    call mem_alloc
-    popq %rdi
+    pushq %rsi
 
-    cmpq $0,%rax
-    je map_failed
-
-    movq $0, %rsi
-    movq $65, %rcx
-    movq %rdi, %r8
-    subq $1, %r8
-loop0:
-    movq %rsi, %rdx
-    addq %rcx, %rdx
-    movb %dl, (%rax,%rsi)
-    incq %rsi
-    cmpq %r8,%rsi
-    jne loop0
-    movb $0, (%rax,%rsi)
-    jp mem_success
-
-map_failed:
-    cmpq $0,%rax
-    jne mem_success
-    leaq map_failed0(%rip), %rdi
+    xorq %rsi,%rdi
+    xorq %rdi,%rsi
+    xorq %rsi,%rdi
     call printcstr
 
-    ret
-
-mem_success:
-
-    movq %rax, %rsi
-    pushq %rdi
+    leaq ioendl(%rip),%rsi
+    movq $2,%rdi
     call printcstr
-    popq %rdi
 
-    xorq %rdi, %rsi
-    xorq %rsi, %rdi
-    xorq %rdi, %rsi
+    popq %rsi
+    popq %rdi
     call mem_free
 
     // exit sequence
