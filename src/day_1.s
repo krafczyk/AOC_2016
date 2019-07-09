@@ -7,46 +7,19 @@ map_succeeded:
     .global _start
     .text
 _start:
-    movq $2120,%rdi
-    pushq %rdi
-    call uintstr
+    movq $-9090909,%rdi
+    call intstr
 
     movq %rax,%rdi
     call cstrlen
+
     movq %rax,%rsi
-
-    pushq %rdi
     pushq %rsi
-
-    call printcstr
-
-    leaq ioendl(%rip),%rdi
-    movq $2,%rsi
-    call printcstr
-
-    popq %rsi
-    popq %rdi
-
-    call mem_free
-
-    popq %rdi
-    call uinthexstr
-
-    movq %rax,%rdi
-    call cstrlen
-    movq %rax,%rsi
-
     pushq %rdi
-    pushq %rsi
-
     call printcstr
-
-    leaq ioendl(%rip),%rdi
-    movq $2,%rsi
-    call printcstr
-
-    popq %rsi
     popq %rdi
+    popq %rsi
+
     call mem_free
 
     // exit sequence
