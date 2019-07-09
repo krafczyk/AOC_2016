@@ -55,12 +55,12 @@ uintstr:
     movq $0, %rsi
     movq %rdi, %rax
     movq $10, %rcx
-uintstrbegloop:
+uis0:
     incq %rsi
     movq $0, %rdx
     div %rcx
     cmpq $0,%rax
-    jne uintstrbegloop
+    jne uis0
     incq %rsi; // %rsi now contains the length
 
     // Allocate memory
@@ -72,10 +72,10 @@ uintstrbegloop:
     popq %rdi
 
     cmpq $0,%rax
-    jne uintstr0
+    jne uis1
     ret
 
-uintstr0:
+uis1:
     // Now we need to set the string.
     // Save initial variable
     movq %rax,%r9; // The address of the new string
@@ -83,16 +83,18 @@ uintstr0:
     decq %rsi; // decrease since we can't access beyond the array
     movb $0,(%r9,%rsi); // Set the 0 byte at the end of string.
     movq $10,%rcx; // Dividend
-uintstr1:
+uis2:
     decq %rsi; // Decrease by one.
     movq $0,%rdx; // Zero out rdx
     div %rcx; // Divide numerator
     addq $48,%rdx; // Add ascii value for 0 to remainder.
     movb %dl,(%r9,%rsi); // Save string value at byte
     cmpq $0,%rsi
-    jne uintstr1
+    jne uis2
     movq %r9,%rax; // Save string to return
     ret
+
+
 //    .text
 //    .globl open
 // open a file and get a file descriptor
