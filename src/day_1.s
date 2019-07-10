@@ -1,45 +1,40 @@
     .section .rodata
     .text
 str0:
-    .string "test0"
-str1:
-    .string "test0"
-str2:
-    .string "test0"
-str3:
-    .string "tes"
-mess1:
-    .string "str0 and str1 are equal!\n"
-mess2:
-    .string "str0 and str1 are not equal..\n"
-mess3:
-    .string "str2 and str3 are equal..\n"
-mess4:
-    .string "str2 and str3 are not equal!\n"
+    .string " arguments\n"
     .global _start
     .text
 _start:
+    movq (%rsp),%r15; // Save the number of arguments: argc
+    movq %r15,%rdi
+    call uintstr
+    movq %rax,%rdi
+    call cstrlen
+    movq %rax,%rsi
+    pushq %rdi
+    pushq %rsi
+    call printcstr
+    popq %rsi
+    popq %rdi
+    call mem_free
     movq $str0,%rdi
-    movq $str1,%rsi
-    call cstrcmp
-    movq $mess1,%rdi
-    movq $mess1,%rbx
-    cmpq $0,%rax
-    cmovneq %rbx,%rdi
     call cstrlen
     movq %rax,%rsi
     call printcstr
 
-    movq $str2,%rdi
-    movq $str3,%rsi
-    call cstrcmp
-    movq $mess3,%rdi
-    movq $mess4,%rbx
-    cmpq $0,%rax
-    cmovneq %rbx,%rdi
+    movq $0,%r14; // Start loop counter
+l0:
+    incq %r14
+    movq (%rsp,%r14,8),%rdi
     call cstrlen
     movq %rax,%rsi
     call printcstr
+    movq $ioendl,%rdi
+    call cstrlen
+    movq %rax,%rsi
+    call printcstr
+    cmp %r15,%r14
+    jne l0
 
     // exit sequence
     movq $60,%rax; // Syscall 60 is exit
