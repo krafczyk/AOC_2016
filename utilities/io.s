@@ -5,21 +5,6 @@ ioendl:
     .string "\n"
 iohexmap:
     .string "0123456789ABCDEF"
-// Get the length of a zero-terminated string
-// %rdi - string
-// returns - %rax - length of string
-// clobbers - %rax
-    .text
-    .globl cstrlen
-cstrlen:
-    movq $-1,%rax
-cstrlen0:
-    incq %rax
-    cmpb $0,(%rdi,%rax)
-    jne cstrlen0
-    incq %rax
-    ret
-
 // print a string to a file
 // %rdi - uint64 - file handle
 // %rsi - string - the string
