@@ -16,7 +16,7 @@ cstrlen0:
 // Compare two c strings
 // %rdi - string - String A
 // %rsi - string - String B
-// returns - %rax - 0 if equal, 1 if not.
+// returns - %rax - 1 if equal, 0 if not.
 // clobbers - %rbx, %rcx
     .text
     .globl cstrcmp
@@ -33,9 +33,9 @@ cscpl:
     jne cscpl
 
 cscps:
-    movq $0,%rax
+    movq $1,%rax
     ret
 
 cscpf:
-    movq $1,%rax
+    movq $0,%rax
     ret

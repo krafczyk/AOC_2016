@@ -34,7 +34,7 @@ ganf:
 // %rdi - pointer on stack to start of argument section, should point to argc.
 // %rsi - argument identifier
 // returns - %rax - pointer to cstring argument or 0
-// clobbers - no others
+// clobbers -
     .text
     .globl getargid
 getargid:
@@ -48,7 +48,7 @@ gail:
     jb gaif1
     movq (%r8,%rdx,8),%rdi
     call cstrcmp
-    cmpq $0,%rax
+    cmpq $1,%rax
     jne gail
 
     // We found the identifier, now we need to check if we're at the end.
@@ -73,5 +73,34 @@ gaif2:
     call printcstr
 
 gaiff:
+    movq $0,%rax
+    ret
+
+// Test whether argument exists
+// %rdi - pointer on stack to start of argument section, should point to argc.
+// %rsi - argument to test for
+// returns - %rax - 1 if it exists, 0 if not
+// clobbers - no others
+    .text
+    .globl testargid
+testargid:
+    movq %rdi, %r8; // Save argument list
+    movq (%r8),%r9; // Get number of arguments passed.
+
+    movq $0,%rdx; // Start counting
+tail:
+    incq %rdx;
+    cmpq %rdx,%r9; // Check that we aren't beyond 
+    jb taif
+    movq (%r8,%rdx,8),%rdi
+    call cstrcmp
+    cmpq $0,%rax
+    jne tail
+
+    // We found the identifier, now we need to check if we're at the end.
+    movq $1,%rax
+    ret
+
+taif:
     movq $0,%rax
     ret
