@@ -1,3 +1,13 @@
+// Helper function to free a c string
+// %rdi - string
+    .text
+    .globl freecstr
+freecstr:
+    call cstrlen
+    movq %rax,%rsi
+    call mem_free
+    ret
+
 // Get the length of a zero-terminated string
 // %rdi - string
 // returns - %rax - length of string
@@ -11,6 +21,53 @@ cstrlen0:
     cmpb $0,(%rdi,%rax)
     jne cstrlen0
     incq %rax
+    ret
+
+// Concatenate two c strings, allocates the new string dynamically
+// %rdi - string - String a
+// %rsi - string - String b
+    .text
+    .globl strcat
+strcat:
+    // Compute the length of the strings
+    call cstrlen
+    movq %rax,%rcx
+    movq %rdi,%r8
+    movq %rsi,%rdi
+    call cstrlen
+    // Add up the two lengths, decrease by one.
+    addq %rax,%rcx
+    decq %rcx
+    
+    // Allocate memory for the new string
+    pushq %rdi; // String B
+    pushq %r8; // String A
+    movq %rcx,%rdi
+    call mem_alloc
+
+    popq %rbx; // Load rbx with String A
+    movq $0,%rsi
+    movq $0,%rdi
+    movq $0,%r8
+    jmp scl1
+scl0:
+    movq $1,%r8
+    popq %rbx // Load rbx with String B
+    movq $0,%rdi
+scl1:
+    cmpb $0,(%rbx,%rdi)
+    je scl2
+    movb (%rbx,%rdi),%dl
+    movb %dl,(%rax,%rsi)
+    incq %rdi
+    incq %rsi
+    jmp scl1
+
+scl2:
+    cmpq $0,%r8
+    je scl0
+    // Load last element of string with 0
+    movb $0,(%rax,%rsi)
     ret
 
 // Compare two c strings
@@ -194,3 +251,8 @@ is5:
     // Set return value properly
     movq %r8,%rax
     ret
+
+// get a uint from a string
+// %rdi - uint64 - the value
+// returns - pointer to the new cstring
+struint:
