@@ -1,3 +1,10 @@
+    .section .rodata
+    .text
+strerr0:
+    .string "Unexpected character!\n"
+strerr1:
+    .string "Overflow while converting!\n"
+
 // Helper function to free a c string
 // %rdi - string
     .text
@@ -26,6 +33,8 @@ cstrlen0:
 // Concatenate two c strings, allocates the new string dynamically
 // %rdi - string - String a
 // %rsi - string - String b
+// returns - %rax - new string concatenated
+// clobbers - %rdi, %rsi, %rbx, %rcx, %rax, %r8, %r9, %r10
     .text
     .globl strcat
 strcat:
@@ -255,4 +264,72 @@ is5:
 // get a uint from a string
 // %rdi - uint64 - the value
 // returns - pointer to the new cstring
+    .text
+    .globl struint
 struint:
+    // Compute string length
+    call cstrlen
+    movq %rax,%rcx
+    movq $0,%r8; // initialize answer
+    cmpq $1,%rcx
+    jg sui0
+    movq %r8,%rax
+    ret; // Quit early! String is too short!
+
+sui0:
+    subq $2, %rcx; // the last element of the string
+    
+    // Prep for the loop
+    movq $1,%rbx; // Set first power
+    movq $10,%r9; // Save multiplication factor
+    movq $0,%rsi; // Set index of 
+
+    // start of loop
+sui1:
+    xorq %rax,%rax; // Zero arithmetic registers
+    xorq %rdx,%rdx;
+    movb (%r8,%rcx),%al; // Load character
+    // Test that the byte is expected
+    cmpq $48,%rax;
+    jl sui2
+    cmpq $57,%rax;
+    jg sui2
+
+    subq $48,%rax; // subtract from '0'
+    mul %rbx
+    cmpq $0,%rdx; // Check if the multiplication overflowed
+    jne sui3
+
+    addq %rax,%r8; // Add to answer.
+
+    // Decrement
+    cmpq $0,%rcx
+    je sui4
+    decq %rcx
+    movq %rbx,%rax
+    xorq %rdx,%rdx
+    mul %r9; // advance
+    cmpq $0,%rdx
+    jne sui3
+    jmp sui1
+    
+    
+sui2:
+    movq $strerr0, %rdi
+    call cstrlen
+    movq %rax,%rsi
+    call printcstr
+    movq $0,%rax
+    ret
+
+sui3:
+    movq $strerr1, %rdi
+    call cstrlen
+    movq %rax,%rsi
+    call printcstr
+    movq $0,%rax
+    ret
+
+sui4:
+    movq %r8,%rax; // Finished!
+    ret
