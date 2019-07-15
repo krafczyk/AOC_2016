@@ -3,8 +3,7 @@
     .globl ioendl
 ioendl:
     .string "\n"
-iohexmap:
-    .string "0123456789ABCDEF"
+
 // print a string to a file
 // %rdi - uint64 - file handle
 // %rsi - string - the string
