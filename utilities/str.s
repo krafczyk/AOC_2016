@@ -266,18 +266,18 @@ ics4:
 // %rdi - uint64 - the value
 // returns - pointer to the new cstring
     .text
-    .globl struint
-struint:
+    .globl cstruint
+cstruint:
     // Compute string length
     call cstrlen
     movq %rax,%rcx
     movq $0,%r8; // initialize answer
     cmpq $1,%rcx
-    jg sui0
+    jg csui0
     movq %r8,%rax
     ret; // Quit early! String is too short!
 
-sui0:
+csui0:
     subq $2, %rcx; // the last element of the string
     
     // Prep for the loop
@@ -286,36 +286,36 @@ sui0:
     movq $0,%rsi; // Set index of 
 
     // start of loop
-sui1:
+csui1:
     xorq %rax,%rax; // Zero arithmetic registers
     xorq %rdx,%rdx;
     movb (%r8,%rcx),%al; // Load character
     // Test that the byte is expected
     cmpq $48,%rax;
-    jl sui2
+    jl csui2
     cmpq $57,%rax;
-    jg sui2
+    jg csui2
 
     subq $48,%rax; // subtract from '0'
     mul %rbx
     cmpq $0,%rdx; // Check if the multiplication overflowed
-    jne sui3
+    jne csui3
 
     addq %rax,%r8; // Add to answer.
 
     // Decrement
     cmpq $0,%rcx
-    je sui4
+    je csui4
     decq %rcx
     movq %rbx,%rax
     xorq %rdx,%rdx
     mul %r9; // advance
     cmpq $0,%rdx
-    jne sui3
-    jmp sui1
+    jne csui3
+    jmp csui1
     
     
-sui2:
+csui2:
     movq $strerr0, %rdi
     call cstrlen
     movq %rax,%rsi
@@ -323,7 +323,7 @@ sui2:
     movq $0,%rax
     ret
 
-sui3:
+csui3:
     movq $strerr1, %rdi
     call cstrlen
     movq %rax,%rsi
@@ -331,6 +331,72 @@ sui3:
     movq $0,%rax
     ret
 
-sui4:
+csui4:
+    movq %r8,%rax; // Finished!
+    ret
+
+// get a uint from a string
+// %rdi - uint64 - the value
+// %rsi - uint64 - length
+// returns - pointer to the new cstring
+    .text
+    .globl struint
+struint:
+
+    movq %rsi,%rcx
+    decq %rcx
+    
+    // Prep for the loop
+    movq $1,%rbx; // Set first power
+    movq $10,%r9; // Save multiplication factor
+    movq $0,%rsi; // Set index of 
+
+    // start of loop
+sui0:
+    xorq %rax,%rax; // Zero arithmetic registers
+    xorq %rdx,%rdx;
+    movb (%r8,%rcx),%al; // Load character
+    // Test that the byte is expected
+    cmpq $48,%rax;
+    jl sui1
+    cmpq $57,%rax;
+    jg sui1
+
+    subq $48,%rax; // subtract from '0'
+    mul %rbx
+    cmpq $0,%rdx; // Check if the multiplication overflowed
+    jne sui2
+
+    addq %rax,%r8; // Add to answer.
+
+    // Decrement
+    cmpq $0,%rcx
+    je sui3
+    decq %rcx
+    movq %rbx,%rax
+    xorq %rdx,%rdx
+    mul %r9; // advance
+    cmpq $0,%rdx
+    jne sui2
+    jmp sui0
+    
+    
+sui1:
+    movq $strerr0, %rdi
+    call cstrlen
+    movq %rax,%rsi
+    call printcstr
+    movq $0,%rax
+    ret
+
+sui2:
+    movq $strerr1, %rdi
+    call cstrlen
+    movq %rax,%rsi
+    call printcstr
+    movq $0,%rax
+    ret
+
+sui3:
     movq %r8,%rax; // Finished!
     ret
