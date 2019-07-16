@@ -1,7 +1,7 @@
 // Allocate a block of memory
 // %rdi - uint64 - number of bytes to allocate
 // returns - %rax - address of start of memory block, or error
-// clobbers - %rsi
+// clobbers - %rdi,%rsi,%rdx,%r10,%r8,%r9
     .text
     .globl mem_alloc
 mem_alloc:
@@ -42,3 +42,17 @@ mem_free:
     movq $11,%rax
     syscall
     ret
+
+// Copy memory
+// %rdi - void* - address of memory to copy
+// %rsi - size_t - length in bytes of memory to copy
+// %rax - returns - memory pointer to new copied memory
+// clobbers
+    .text
+    .globl copy_mem
+copy_mem:
+    pushq %rdi
+    pushq %rsi
+    movq %rsi,%rdi
+    call mem_alloc
+

@@ -31,12 +31,13 @@ printcstr:
     call fprintcstr
     ret
 
-//    .text
-//    .globl open
 // open a file and get a file descriptor
 // %rdi - string - filepath
-// %rsi - string - file mode
-//open:
-//    movq $0x05, %rax
-//    movq %rdi, %rbx
+// %rsi - int - file flags
+// %rdx - string - mode - we need to translate to file 
+    .text
+    .globl openfile
+openfile:
+    movq $2, %rax
+    movq %rdi, %rbx
 
